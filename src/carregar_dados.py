@@ -3,11 +3,6 @@ from collections import Counter
 import re
 
 def ler_arff(caminho, alvo_binario=None):
-    """Lê ARFF simples. Retorna X, y, cabecalho (lista de atributos).
-
-    Se alvo_binario for None, o alvo deve ser numérico (regressão).
-    Se o último atributo for nominal ({...}), levanta erro.
-    """
     atributos, X, y = [], [], []
     lendo_dados = False
     with open(caminho, encoding="utf-8") as f:
