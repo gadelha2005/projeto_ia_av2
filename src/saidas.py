@@ -6,6 +6,8 @@ from validacao_cruzada import gerar_folds
 from knn import KNN, DISTANCIAS
 from bayes_univariado import BayesUnivariado
 from regressao_linear import RegressaoLinearMultipla
+from metricas import matriz_confusao, acuracia, precisao, recall, f1, mae, r2, r2_ajustado
+from experimentos import rodar_classificacao, rodar_regressao
 
 
 def saida_normalizacao():
@@ -117,9 +119,58 @@ def saida_regressao_linear():
     print(f"cpu_small: R2 fold 1 = {1 - ss_res / ss_tot:.4f}")
 
 
+def saida_metricas():
+    print("\n##### METRICAS #####")
+    real = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0])
+    prev = np.array([1, 1, 1, 0, 1, 0, 0, 0, 0, 0])
+    print("matriz de confusao (vp, vn, fp, fn):", matriz_confusao(real, prev), "(esperado (3, 5, 1, 1))")
+    print("acuracia:", acuracia(real, prev), "(esperado 0.8)")
+    print("precisao:", precisao(real, prev), "(esperado 0.75)")
+    print("recall:", recall(real, prev), "(esperado 0.75)")
+    print("f1:", f1(real, prev), "(esperado 0.75)")
+    yr = np.array([3.0, 5.0, 7.0, 9.0])
+    yp = np.array([2.0, 5.0, 8.0, 9.0])
+    print("mae:", mae(yr, yp), "(esperado 0.5)")
+    print("r2:", round(r2(yr, yp), 4), "(esperado 0.9)")
+    print("r2 ajustado (1 atributo):", round(r2_ajustado(yr, yp, 1), 4), "(esperado 0.85)")
+
+
+def _formatar(par, casas=4):
+    return f"{par[0]:.{casas}f} \u00b1 {par[1]:.{casas}f}"
+
+
+def _imprimir_tabela(resultados, colunas, titulo):
+    nomes = [c[0] for c in colunas]
+    larg = max(len(n) for n in resultados) + 2
+    print(titulo.ljust(larg) + "".join(n.ljust(20) for n in nomes))
+    for modelo, metricas in resultados.items():
+        linha = modelo.ljust(larg)
+        for nome, chave in colunas:
+            linha += _formatar(metricas[chave]).ljust(20)
+        print(linha)
+
+
+def saida_resultados():
+    print("\n##### RESULTADOS (5-fold, k=5, media \u00b1 desvio) #####")
+    X, y, _ = ler_arff("dados/kc1.arff", alvo_binario="true")
+    print(f"\n=== CLASSIFICACAO: kc1 ({X.shape[0]} amostras, {X.shape[1]} atributos) ===")
+    _imprimir_tabela(rodar_classificacao(X, y), [
+        ("Acuracia", "acuracia"), ("Precisao", "precisao"), ("Recall", "recall"),
+        ("F1-Score", "f1"), ("Tempo Treino (s)", "tempo_treino"), ("Tempo Teste (s)", "tempo_teste"),
+    ], "Classificador")
+    X, y, _ = ler_arff("dados/cpu_small.arff")
+    print(f"\n=== REGRESSAO: cpu_small ({X.shape[0]} amostras, {X.shape[1]} atributos) ===")
+    _imprimir_tabela(rodar_regressao(X, y), [
+        ("R2", "r2"), ("R2 ajustado", "r2_ajustado"), ("MAE", "mae"),
+        ("Tempo Treino (s)", "tempo_treino"), ("Tempo Teste (s)", "tempo_teste"),
+    ], "Regressor")
+
+
 if __name__ == "__main__":
     saida_normalizacao()
     saida_folds()
     saida_knn()
     saida_bayes()
     saida_regressao_linear()
+    saida_metricas()
+    saida_resultados()
