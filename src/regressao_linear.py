@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class RegressaoLinearMultipla:
     def fit(self, X, y):
         A = np.column_stack([np.ones(len(X)), X])

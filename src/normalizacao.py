@@ -1,13 +1,6 @@
 import numpy as np
 
-
 class ZScore:
-    """Padronização z-score: z = (x - media) / desvio.
-
-    Os parâmetros (média e desvio) são aprendidos SOMENTE no treino (fit)
-    e depois aplicados a qualquer conjunto (transform), evitando vazamento
-    de dados do teste para o treino.
-    """
 
     def __init__(self):
         self.media = None
@@ -16,8 +9,6 @@ class ZScore:
     def fit(self, X):
         self.media = X.mean(axis=0)
         self.desvio = X.std(axis=0)
-        # Coluna constante teria desvio 0 (divisão por zero): usa 1,
-        # o que deixa a coluna toda zerada após subtrair a média.
         self.desvio[self.desvio == 0] = 1.0
         return self
 
@@ -39,7 +30,7 @@ def testar_normalizacao():
     ]:
         X, y, _ = ler_arff(caminho, alvo_binario=alvo)
 
-        # Simula um fold: 80% treino, 20% teste
+        
         rng = np.random.default_rng(42)
         idx = rng.permutation(len(X))
         corte = int(0.8 * len(X))
