@@ -20,5 +20,5 @@ python src/saidas.py
 - `src/experimentos_av3.py`: experimentos do Perceptron, topologias do MLP, taxa x épocas e impacto do Z-score (com x sem).
 
 ```bash
-python src/saidas_av3.py   # ~2 min; gera resultados_av3.json
+python src/saidas_av3.py   # ~2 min
 ```

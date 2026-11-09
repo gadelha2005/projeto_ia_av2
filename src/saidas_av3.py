@@ -1,5 +1,3 @@
-import json
-
 import numpy as np
 
 from carregar_dados import ler_arff
@@ -118,10 +116,6 @@ def main():
     for nome, r in z["regressao"].items():
         print(f"  {nome.ljust(32)} com: RMSE {_formatar(r['com_zscore']['rmse'])}  R2 {_formatar(r['com_zscore']['r2'])}"
               f" | sem: RMSE {_formatar(r['sem_zscore']['rmse'])}  R2 {_formatar(r['sem_zscore']['r2'])}")
-
-    with open("resultados_av3.json", "w", encoding="utf-8") as f:
-        json.dump(tudo, f, indent=1, ensure_ascii=False, default=float)
-    print("\nResultados salvos em resultados_av3.json")
 
 
 if __name__ == "__main__":
