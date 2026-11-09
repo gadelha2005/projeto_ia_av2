@@ -22,15 +22,20 @@ MODELOS_REGRESSAO = {
 }
 
 
-def validar(criar_modelo, X, y, folds, metricas):
+def validar(criar_modelo, X, y, folds, metricas, normalizar=True, avaliar_treino=False):
     valores = {nome: [] for nome in metricas}
+    if avaliar_treino:
+        valores.update({f"{nome}_treino": [] for nome in metricas})
     valores["tempo_treino"] = []
     valores["tempo_teste"] = []
 
     for idx_tr, idx_te in folds:
-        z = ZScore()
-        X_tr = z.fit_transform(X[idx_tr])
-        X_te = z.transform(X[idx_te])
+        if normalizar:
+            z = ZScore()
+            X_tr = z.fit_transform(X[idx_tr])
+            X_te = z.transform(X[idx_te])
+        else:
+            X_tr, X_te = X[idx_tr], X[idx_te]
 
         modelo = criar_modelo()
         t0 = time.perf_counter()
@@ -41,6 +46,10 @@ def validar(criar_modelo, X, y, folds, metricas):
 
         for nome, funcao in metricas.items():
             valores[nome].append(funcao(y[idx_te], y_prev))
+        if avaliar_treino:
+            y_prev_tr = modelo.predict(X_tr)
+            for nome, funcao in metricas.items():
+                valores[f"{nome}_treino"].append(funcao(y[idx_tr], y_prev_tr))
         valores["tempo_treino"].append(t1 - t0)
         valores["tempo_teste"].append(t2 - t1)
 

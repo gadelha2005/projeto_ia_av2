@@ -42,3 +42,16 @@ def r2(y_real, y_prev):
 def r2_ajustado(y_real, y_prev, n_atributos):
     n = len(y_real)
     return float(1 - (1 - r2(y_real, y_prev)) * (n - 1) / (n - n_atributos - 1))
+
+
+def especificidade(y_real, y_prev):
+    vp, vn, fp, fn = matriz_confusao(y_real, y_prev)
+    return vn / (vn + fp) if vn + fp > 0 else 0.0
+
+
+def mse(y_real, y_prev):
+    return float(((y_real - y_prev) ** 2).mean())
+
+
+def rmse(y_real, y_prev):
+    return float(np.sqrt(mse(y_real, y_prev)))
